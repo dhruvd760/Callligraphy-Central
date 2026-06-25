@@ -1,0 +1,10 @@
+{
+  "mcpServers": {
+    "calligraphy_central": {
+      "command": "c:\\xampp\\htdocs\\calligraphy_project\\python_ai\\.venv\\Scripts\\python.exe",
+      "args": [
+        "c:\\xampp\\htdocs\\calligraphy_project\\python_ai\\mcp_server_entry.py"
+      ]
+    }
+  }
+}

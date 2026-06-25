@@ -1,0 +1,912 @@
+/* =========================================
+   1. GLOBAL LAYOUT & NAVIGATION
+   Applies to: ALL PAGES (Header, Menu, Background)
+   ========================================= */
+* { 
+    margin: 0;
+    padding: 0; 
+    font-family: "Quintessential", serif; 
+    font-weight: 400; 
+}
+
+.container { 
+    position: absolute; 
+    width: 100%; 
+}
+
+.container .bkgimg { 
+    background: url("./backg.png") center/cover no-repeat; 
+    position: fixed; 
+    left: 0px; 
+    width: 100%;
+    height: 100%;
+}
+
+.head { 
+    height: 90px; 
+    width: 100%; 
+    position: fixed; 
+    text-align: center; 
+    font-size: 60px; 
+    font-family: "Moon Dance", "Quintessential", serif; 
+    box-shadow: 0px 0px 20px rgb(47, 4, 4); 
+    background: url(./lap_menu.png) center/cover no-repeat; 
+    z-index: 10; 
+}
+
+.menu { 
+    position: fixed; 
+    top: 90px; 
+    left: 0px;
+    width: 160px; 
+    height: calc(100vh - 90px); 
+    box-shadow: 0 0 20px rgb(47, 4, 4); 
+    display: flex; 
+    align-items: flex-start; 
+    z-index: 5;
+    background-image: url(mob_menu.png);
+    overflow-x: auto; 
+}
+
+#check{
+    position: relative;
+    z-index: 100;
+    display: none;
+}
+
+.hamburger{
+    display: block;
+    position: fixed;
+    width: 160px;
+    height: 50px;
+    top: 90px;
+    z-index: 1000;
+}
+
+.bar {
+  display: flex;
+  position: relative;
+  width: 28px;
+  height: 4px;
+  margin: 8px 8px;
+  border-radius: 25px;
+  background-color: black;
+}
+
+.list { 
+    margin-top: 50px;
+    flex: 1; 
+    display: flex; 
+    flex-direction: column; 
+    justify-content: flex-start; 
+    align-items: center; 
+    width: 100%; 
+}
+
+.ul1 { 
+    display: flex;  
+    flex-direction: column; 
+    gap: 0px;
+    margin: 0; 
+    list-style: none; 
+    width: 100%; 
+}
+
+.ul1 li { 
+    width: 100%; 
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
+    height: auto; 
+}
+
+.ul1 a { 
+    display: flex; 
+    align-items: left; 
+    justify-content: left;
+    width: 100%; 
+    padding: 14px 8px; 
+    font-family: "Moon Dance", "Quintessential", serif; 
+    font-size: 25px; 
+    color: black; 
+    text-decoration: none; 
+    line-height: normal; 
+}
+
+.mob {
+    display: block;
+    text-decoration: none;
+    top: 300px; 
+    color: #333; 
+    transition: all 0.3s ease; 
+}
+
+.mob:hover {
+  background-color: #ffffff; 
+  color: #007bff; 
+  padding-left: 0px; 
+}
+
+.mob .active {
+  background-color: #e6f2ff; 
+  font-weight: 700;
+}
+
+.container .content { 
+    position: relative; 
+    top: 90px; 
+    margin-left: 170px;   
+}
+
+.container .content h1 { 
+    text-align: center; 
+    font-size: 45px; 
+    font-family: "Moon Dance", "Quintessential", serif; 
+    color: black; 
+}
+
+.container .content p { 
+    font-size: 28px; 
+    color: black; 
+    text-align: justify; 
+    margin: 20px; 
+}
+
+/* Global Mobile & Layout Media Queries */
+@media (min-width:601px) and (orientation:landscape){
+    #check:checked ~.menu{ left: -300px; }
+    #check:checked ~.content{ left: -90px; }
+    .menu .over{
+        display: flex;
+        position:fixed;
+        height: 50px;
+        width: 160px;
+        background-image: url(mob_menu.png);
+        z-index: 1100; 
+    }
+}
+
+@media (min-width:601px) and (orientation:portrait){
+    #check:checked ~.menu{ left: -300px; }
+    #check:checked ~.content{ left: -90px; }
+    .menu .over{
+        display: flex;
+        position:fixed;
+        height: 50px;
+        width: 160px;
+        background-image: url(mob_menu.png);
+        z-index: 1100; 
+    }
+}
+
+@media (max-width: 600px) and (orientation: portrait) {
+  .container { 
+    width: 100%; 
+    height: 100%; 
+    display: flex; 
+    flex-direction: column; 
+  }
+  .bkgimg { 
+    top: 0; 
+    bottom: 0; 
+    height: calc(100% - 30px); 
+    background-size: contain; 
+  }
+  .hamburger{ display: none; }
+  .menu { 
+      position: fixed; 
+      top: 58px; 
+      width: 100vw; 
+      height: 59px; 
+      flex-direction: row; 
+      justify-content: space-evenly; 
+      background: url("./mob_menu.png") repeat-x; 
+      border-bottom: 1px solid black; 
+      box-shadow: none; 
+      z-index: 100; 
+  }
+  .menu .list{ margin-top: 0px; }
+  .ul1 { 
+      flex-direction: row;  
+      padding: 0;
+      justify-content: space-evenly;
+  }
+  .ul1 a { 
+    font-size: 16px; 
+    border: none; 
+    padding: 6px 15px; 
+    line-height: 18px;
+  }
+  .head { 
+      height: 58px; 
+      font-size: 40px; 
+      margin-right: auto; 
+      background: url("./mob_menu.png") repeat-x; 
+      border-bottom: 1px solid black;
+      box-shadow: none; 
+      z-index: 101; 
+  }
+  .container .content { 
+    margin-top: 80px; 
+    margin-left: 0; 
+    margin-left: 10px;
+    margin-right: 10px;
+  } 
+  .container .content h1 { font-size: 35px; }
+  .container .content p, #culture, .quotes { 
+    font-size: 18px; 
+    margin: 0 10px; 
+  }
+  .content #culture, .quotes{ margin: 0 40px; }
+  .gallery-grid {
+      padding: 10px; 
+      gap: 20px; 
+  }
+}
+
+/* =========================================
+   2. STATIC HOME CONTENT
+   Applies to: index.php / dashboard.php
+   ========================================= */
+#culture, .quotes { 
+    list-style-type: lower-latin; 
+    padding: 0; 
+    margin: 20px; 
+    font-size: 28px; 
+    color: black; 
+    text-align: justify; 
+}
+
+
+/* =========================================
+   3. LEGACY GALLERY MODULE
+   Applies to: older gallery format (content1)
+   ========================================= */
+.content1 .gallery-grid { 
+    display: flex; 
+    flex-wrap: wrap; 
+    justify-content: center; 
+    gap: 40px; 
+    padding: 40px; 
+}
+
+.content1 .gallery-card { 
+    background: #fffbf0; 
+    border: 1px solid #4a3b3b; 
+    width: 100%; 
+    max-width: 400px; 
+    box-shadow: 5px 5px 15px rgba(0,0,0,0.2); 
+    border-radius: 8px; 
+    overflow: hidden; 
+    transition: transform 0.3s; 
+}
+
+.content1 .gallery-card:hover { 
+    transform: scale(1.02); 
+}
+
+.content1 .gallery-card img, .gallery-card video { 
+    width: 100%; 
+    height: auto; 
+    max-height: 600px; 
+    object-fit: contain; 
+    background: #000; 
+    display: block; 
+    border-bottom: 1px solid #4a3b3b; 
+}
+
+.content1 .card-info { 
+    padding: 15px; 
+    text-align: center; 
+    background: #fffbf0;
+}
+
+.content1 .card-info h3 { 
+    font-family: "Moon Dance", cursive; 
+    font-size: 28px; 
+    margin-bottom: 5px; 
+}
+
+.content1 .card-info .author { 
+    font-size: 16px; 
+    color: #555; 
+    font-style: italic; 
+    margin-bottom: 10px; 
+}
+
+.content1 .card-info .desc { 
+    font-size: 1px; 
+    text-align: justify; 
+    padding: 0 10px;
+    max-height: 80px; 
+    overflow-y: auto; 
+}
+
+
+/* =========================================
+   4. NEW MASONRY FEED & GALLERY
+   Applies to: gallery.php & my_posts.php
+   ========================================= */
+.gallery-title {
+    color: #2f0404;
+    font-family: 'Moon Dance', cursive;
+    text-align: center;
+    margin-bottom: 24px;
+    font-size: 30px; 
+}
+
+.msg-success {
+    color: #28a745;
+    margin-bottom: 8px;
+    text-align: center;
+    font-weight: bold;
+    font-size: 12px;
+}
+
+.empty-gallery-msg {
+    text-align: center;
+    padding: 32px; 
+    background: rgba(255, 255, 255, 0.43);
+    border-radius: 24px; 
+    border: 1px solid #4a3b3b;
+}
+
+.empty-gallery-msg p {
+    color: #2f0404;
+    font-size: 14px; 
+    margin: 0;
+}
+
+.insta-grid {
+    column-count: 3;
+    column-gap: 20px; 
+    width: 100%;
+}
+@media (max-width: 900px) { .insta-grid { column-count: 2; } }
+@media (max-width: 600px) { .insta-grid { column-count: 1; } }
+
+.insta-card {
+    background-color: rgba(255, 255, 255, 0.6);
+    border: 1px solid #4a3b3b;
+    border-radius: 12px; 
+    margin:20px 0px;
+    box-shadow: 0 3px 12px rgba(0,0,0,0.05);
+    break-inside: avoid;
+    -webkit-column-break-inside: avoid;
+    page-break-inside: avoid;
+    display: inline-block;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.card-media { margin-bottom: 12px; }
+
+.card-media img,
+.card-media video {
+    width: 100%;
+    border-radius: 12px 12px 0px 0px; 
+    padding: 0px;
+    border: 1px solid #4a3b3b;
+    display: block;
+}
+
+.card-content{
+    padding: 20px;
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 4px; 
+}
+
+/* Secondary header logic from my_posts styling */
+.card-header {
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center;
+    margin-bottom: 5px;
+}
+
+.username {
+    font-size: 25px; 
+    font-weight: bold;
+    color: #4a3b3b;
+    font-family: 'Moon Dance', cursive;
+}
+
+.post-date {
+    font-size: 15px; 
+    color: #666;
+    margin-bottom: 12px; 
+    font-style: italic;
+}
+
+.post-title {
+    color: #2f0404;
+    margin-bottom: 4px; 
+    font-size: 25px; 
+}
+
+.caption {
+    font-size: 16px; 
+    color: #333;
+    line-height: 1.5;
+    margin: 0;
+}
+
+@media (max-width: 480px) {
+    .caption { font-size: 20px; }
+    .username { font-size: 12px; }
+    .card-content { padding: 8px; }
+    .card-header .username{ font-size: 30px; }
+}
+
+
+/* =========================================
+   5. POST INTERACTIONS (LIKE/SHARE/COMMENT)
+   Applies to: gallery.php & view_post.php
+   ========================================= */
+.interaction-bar {
+    display: flex;
+    gap: 8px; 
+    margin-bottom: 12px; 
+    align-items: center;
+}
+
+/* Overriding circular logic for interactions */
+.interaction-bar {
+    display: flex;
+    justify-content: flex-end; 
+    align-items: center;
+    gap: 10px; 
+    margin-top: 5px; 
+    margin-bottom: 15px;
+    padding-right: 5px;
+}
+
+.action-form { margin: 0; }
+.action-form {
+    margin: 0;
+    padding: 0;
+    display: flex;
+}
+
+.icon-btn {
+    background: rgba(255, 255, 255, 0.7);
+    border: 1px solid #4a3b3b;
+    border-radius: 16px; 
+    padding: 5px 9px; 
+    color: #2f0404;
+    font-size: 14px; 
+    font-weight: bold;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: inherit;
+}
+
+/* Overriding circular logic for icon buttons */
+.icon-btn {
+    border: 1px solid #ddd;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05); 
+    border-radius: 25px; 
+    cursor: pointer;
+    display: flex;
+    text-align: center;
+    transition: all 0.2s ease;
+}
+
+.icon-btn:hover {
+    background: rgba(255, 255, 255, 0.95);
+    transform: translateY(-2px);
+}
+.icon-btn:hover {
+    transform: translateY(-2px); 
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    background: #f9f9f9;
+}
+
+.guest-like {
+    cursor: default;
+    pointer-events: none;
+}
+
+.share-btn { margin-left: auto; }
+.share-btn { margin-left: 0; }
+
+
+/* =========================================
+   6. POST MANAGEMENT (EDIT / DELETE)
+   Applies to: my_posts.php
+   ========================================= */
+.delete-btn {
+    color: #d9534f;
+    text-decoration: none;
+    font-size: 12px; 
+    font-weight: bold;
+    border: 1px solid #d9534f;
+    border-radius: 8px;
+    padding: 2px 6px;
+    transition: background-color 0.2s ease;
+}
+
+/* Duplicate delete button logic unified */
+.delete-btn {
+    color: #dc3545;          
+    font-size: 12px;
+    font-weight: bold;
+    text-transform: uppercase;
+    padding: 2px 6px;
+    border: 1px solid #dc3545;
+    border-radius: 4px;
+    transition: background 0.2s;
+}
+
+.delete-btn:hover {
+    background-color: #dc3545;
+    color: white;
+    text-decoration: none;
+}
+
+.edit-btn {
+    color: #0d6efd;         
+    font-size: 12px;
+    font-weight: bold;
+    text-transform: uppercase;
+    padding: 2px 6px;
+    border: 1px solid #0d6efd;
+    border-radius: 4px;
+    transition: background 0.2s;
+}
+
+.edit-btn:hover {
+    background-color: #0d6efd;
+    color: white;
+    text-decoration: none;
+}
+
+
+/* =========================================
+   7. COMMENT MODAL UI
+   Applies to: view_post.php / gallery.php
+   ========================================= */
+.modal-overlay {
+    display: none; 
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 9999; 
+    justify-content: center;
+    align-items: center;
+    backdrop-filter: blur(3px); 
+}
+
+.modal-content {
+    background: #fff;
+    width: 90%;
+    max-width: 450px;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    max-height: 70vh; 
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    overflow: hidden;
+}
+
+.modal-header {
+    padding: 15px 20px;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-header h3 {
+    margin: 0;
+    font-size: 18px;
+    font-family: 'Poppins', sans-serif;
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    font-size: 28px;
+    line-height: 1;
+    cursor: pointer;
+    color: #666;
+}
+
+.close-btn:hover {
+    color: #000;
+}
+
+.modal-body {
+    padding: 15px 20px;
+    overflow-y: auto; 
+    flex: 1;
+}
+
+.modal-footer {
+    padding: 15px 20px;
+    border-top: 1px solid #eee;
+    background: #fafafa;
+}
+
+.modal-comment-form {
+    display: flex;
+    gap: 10px;
+    margin: 0;
+}
+
+.modal-comment-form input[type="text"] {
+    flex: 1;
+    padding: 10px 15px;
+    border: 1px solid #ddd;
+    border-radius: 20px;
+    font-family: inherit;
+    outline: none;
+}
+
+.modal-comment-form button {
+    background: none;
+    border: none;
+    color: #007bff;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 15px;
+}
+
+
+/* =========================================
+   8. UPLOAD POST FORM
+   Applies to: upload_post.php
+   ========================================= */
+.form-group {
+    margin-bottom: 20px;        
+    width: 100%;                
+}
+
+.form-group input[type="text"],
+.form-group textarea,
+.form-group input[type="file"] {
+    width: 100%;
+    box-sizing: border-box;     
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background: #fafafa;        
+}
+
+/* .content form button {
+    margin-top: 10px;
+    width: 100%;
+} */
+/* =========================================
+   10. UPLOAD POST FORM (upload.php)
+   ========================================= */
+
+/* The main frosted glass container */
+.upload-wrapper {
+    text-align: center; 
+    max-width: 70%; 
+    margin: 20px auto; 
+    padding: 30px; 
+    border: 1px solid #4a3b3b; 
+    border-radius: 25px; 
+    background-color: rgba(255, 255, 255, 0.43);
+}
+
+/* The header text */
+.upload-header-title {
+    text-align: center; 
+    border: 1px solid #4a3b3b; 
+    border-radius: 50px; 
+    background-color: rgba(255, 255, 255, 0.43);
+    padding: 10px; /* Added slight padding for a cleaner border look */
+    font-size: 30px;
+}
+
+/* The error message box */
+.upload-alert-msg {
+    background: #f8d7da; 
+    color: #721c24; 
+    padding: 10px; 
+    border-radius: 5px;
+    margin-bottom: 20px;
+}
+
+/* Wrapper for the labels and inputs */
+.upload-field-container {
+    text-align: left; 
+    font-size: 20px;
+    margin-bottom: 20px;
+}
+
+/* Modifier class for the smaller font size on the file input */
+.upload-field-container.sm-text {
+    font-size: 18px;
+}
+
+/* Text and Textarea Inputs */
+.upload-input {
+    text-align: left; 
+    border-radius: 25px;
+    width: 100%;
+    padding: 12px 15px; /* Added proper padding so text doesn't hit the border */
+    border: 1px solid #ccc;
+    box-sizing: border-box; /* Ensures width: 100% doesn't spill out */
+    font-family: inherit;
+    resize: none;
+}
+
+/* File Selection Input */
+.upload-input-file {
+    text-align: left; 
+    border-radius: 25px;
+    width: 100%;
+    margin-top: 5px;
+    border: 1px solid black;
+    padding-left: 10px;
+    background-color: white;
+}
+
+/* The 400 character limit hint */
+.upload-hint {
+    color: #666;
+    display: block;
+    margin-top: 8px;
+    font-size: 14px;
+}
+
+/* Submit Button */
+.upload-action-btn {
+    text-align: center; 
+    font-size: 18px; 
+    border-radius: 25px; 
+    padding: 10px 25px;
+    background-color: #4a3b3b; /* Pulled from your ink color scheme */
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    font-family: inherit;
+}
+
+.upload-action-btn:hover {
+    background-color: #302626;
+}
+
+/* =========================================
+   9. EDIT POST FORM
+   Applies strictly to: edit_posts.php
+   ========================================= */
+.glass-container {
+    background: rgba(255, 255, 255, 0.25);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 20px;
+    padding: 40px;
+    max-width: 500px;
+    margin: 40px auto;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
+}
+
+.glass-container h1 {
+    font-family: 'Moon Dance', cursive;
+    font-size: 3.5rem;
+    color: #4a3b3b;
+    text-align: center;
+    margin-bottom: 30px;
+    border: 1px solid black;
+    border-radius: 50px;
+}
+
+.group-form {
+    margin-bottom: 40px;
+    text-align: left;
+}
+
+.group-form label {
+    color: #4a3b3b;
+    font-weight: bold;
+    margin-bottom: 8px;
+    display: block;
+    font-family: inherit;
+}
+
+.glass-input {
+    width: 90%;
+    padding: 12px 20px;
+    border-radius: 25px; /* Pill shape for title */
+    border: 1px solid #4a3b3b;
+    background: rgba(255, 255, 255, 0.5);
+    color: #333;
+    font-family: inherit;
+    outline: none;
+    transition: background 0.3s, box-shadow 0.3s;
+}
+
+textarea.glass-input {
+    border-radius: 15px; 
+    resize: none;
+    min-height: 100px;
+}
+
+.glass-input:focus {
+    background: rgba(255, 255, 255, 0.8);
+    box-shadow: 0 0 8px rgba(74, 59, 59, 0.3);
+}
+
+.btn-container {
+    display: flex;
+    gap: 15px;
+    margin-top: 30px;
+}
+
+.btn-ink {
+    background-color: #4a3b3b;
+    color: #fff;
+    border: none;
+    border-radius: 25px;
+    padding: 12px 20px;
+    cursor: pointer;
+    font-size: 1rem;
+    flex: 1; 
+    transition: background-color 0.3s;
+}
+
+.btn-ink:hover {
+    background-color: #302626;
+}
+
+.btn-cancel {
+    background-color: transparent;
+    color: #4a3b3b;
+    border: 2px solid #4a3b3b;
+    border-radius: 25px;
+    padding: 12px 20px;
+    cursor: pointer;
+    font-size: 1rem;
+    flex: 1; 
+    text-align: center;
+    text-decoration: none;
+    transition: background-color 0.3s;
+}
+
+.btn-cancel:hover {
+    background-color: rgba(74, 59, 59, 0.1);
+}
+
+/* =========================================
+   8. ADMIN DASHBOARD
+   Applies to: admin_dashboard.php
+   ========================================= */
+
+.dashboard{
+    max-width:1000px; 
+    margin:20px auto; 
+    padding:20px; 
+    max-width:90%; 
+    backdrop-filter: blur(10px);
+    border-radius: 25px;
+}
+.dashboard-data{
+    width:100%; 
+    border-collapse:collapse; 
+    margin-top:20px;
+    border-radius: 25px;
+}
+.dash-tr{
+    background:#2f0404; 
+    color:white;
+}
+.dash-td{
+    padding:10px;
+    background-color: #ffffffd5;
+    text-align: center;
+}
