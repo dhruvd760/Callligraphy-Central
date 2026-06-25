@@ -6,7 +6,9 @@ include 'includes/header.php';
 
 // Check if an ID was passed in the URL
 if (!isset($_GET['id']) || empty($_GET['id'])) {
-    die("<div class='content'><h2>Post not found.</h2><a href='gallery.php'>Return to Gallery</a></div>");
+    echo "<div class='content'><h2>Post not found.</h2><a href='gallery.php'>Return to Gallery</a></div>";
+    include 'includes/footer.php';
+    exit();
 }
 
 $post_id = intval($_GET['id']);
@@ -23,7 +25,9 @@ $stmt->execute();
 $result = $stmt->get_result();
 
 if ($result->num_rows == 0) {
-    die("<div class='content'><h2>Post not found.</h2><a href='gallery.php'>Return to Gallery</a></div>");
+    echo "<div class='content'><h2>Post not found.</h2><a href='gallery.php'>Return to Gallery</a></div>";
+    include 'includes/footer.php';
+    exit();
 }
 
 $post = $result->fetch_assoc();
@@ -90,13 +94,18 @@ $post = $result->fetch_assoc();
             <hr style="border: 0; border-top: 1px solid #eee; margin: 10px 0;">
             <div style="max-height: 400px; overflow-y: auto; margin-bottom: 15px; padding-right: 10px;">
                 <?php
+                $comments_per_page = 50;
+                $c_page = isset($_GET['c_page']) && is_numeric($_GET['c_page']) ? (int)$_GET['c_page'] : 1;
+                if ($c_page < 1) $c_page = 1;
+                $c_offset = ($c_page - 1) * $comments_per_page;
+
                 $comments_sql = "SELECT u.username, c.comment_text, c.created_at 
                                  FROM comments c 
                                  JOIN users u ON c.user_id = u.user_id 
                                  WHERE c.post_id = ? 
-                                 ORDER BY c.created_at ASC";
+                                 ORDER BY c.created_at ASC LIMIT ? OFFSET ?";
                 $c_stmt = $conn->prepare($comments_sql);
-                $c_stmt->bind_param("i", $post_id);
+                $c_stmt->bind_param("iii", $post_id, $comments_per_page, $c_offset);
                 $c_stmt->execute();
                 $comments_result = $c_stmt->get_result();
                 
@@ -117,6 +126,17 @@ $post = $result->fetch_assoc();
                     echo "<p style='color:#888; font-size:14px;'>No comments yet. Be the first!</p>";
                 endif; 
                 ?>
+                
+                <!-- Comments Pagination Controls -->
+                <div style="text-align: center; margin-top: 10px;">
+                    <?php if ($c_page > 1): ?>
+                        <a href="?id=<?= $post_id ?>&c_page=<?= $c_page - 1 ?>" style="font-size: 12px; color: #007bff; text-decoration: none; margin-right: 15px;">⬅ Previous</a>
+                    <?php endif; ?>
+                    
+                    <?php if ($comments_result->num_rows == $comments_per_page): ?>
+                        <a href="?id=<?= $post_id ?>&c_page=<?= $c_page + 1 ?>" style="font-size: 12px; color: #007bff; text-decoration: none;">Next ➡</a>
+                    <?php endif; ?>
+                </div>
             </div>
 
             <?php if (isset($_SESSION['user_id'])): ?>

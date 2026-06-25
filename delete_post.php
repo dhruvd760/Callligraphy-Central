@@ -34,7 +34,8 @@ $post = $result->fetch_assoc();
 
 // If post doesn't exist
 if (!$post) {
-    die("Post not found.");
+    header("Location: gallery.php?error=not_found");
+    exit();
 }
 
 // 3. CHECK PERMISSION
@@ -55,16 +56,17 @@ if ($post['user_id'] == $current_user_id || $user_role === 'admin') {
         // We decide where to go based on the ROLE, not the link.
         
         if ($user_role === 'admin') {
-            header("Location: admin_dashboard.php?");
+            header("Location: admin_dashboard.php?msg=deleted");
         } else {
             // Regular users go to Gallery
-            header("Location: my_posts.php?");
+            header("Location: my_posts.php?msg=deleted");
         }
         exit();
         
     } else {
         error_log("Database error in delete_post.php: " . $conn->error);
-        die("An error occurred while deleting the record.");
+        header("Location: gallery.php?error=db_error");
+        exit();
     }
 
 } else {
@@ -73,6 +75,7 @@ if ($post['user_id'] == $current_user_id || $user_role === 'admin') {
         'post_id' => $post_id,
         'owner_id' => $post['user_id']
     ]);
-    die("Access Denied: You do not own this post.");
+    header("Location: gallery.php?error=access_denied");
+    exit();
 }
 ?>

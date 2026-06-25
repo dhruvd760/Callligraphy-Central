@@ -45,3 +45,9 @@ CREATE TABLE IF NOT EXISTS comments (
     FOREIGN KEY (post_id) REFERENCES posts(post_id) ON DELETE CASCADE,
     FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
 );
+
+-- 6. Performance Indexes
+CREATE INDEX IF NOT EXISTS idx_posts_upload_date ON posts(upload_date DESC);
+CREATE INDEX IF NOT EXISTS idx_comments_created_at ON comments(created_at ASC);
+CREATE INDEX IF NOT EXISTS idx_comments_post_id ON comments(post_id);
+CREATE INDEX IF NOT EXISTS idx_likes_post_id ON likes(post_id);

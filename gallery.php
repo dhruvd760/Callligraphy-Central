@@ -14,13 +14,23 @@ include 'includes/header.php';
 
     <div class="insta-grid">
         <?php
-        // Fetch posts and count likes simultaneously
+        // Pagination logic
+        $posts_per_page = 20;
+        $page = isset($_GET['page']) && is_numeric($_GET['page']) ? (int)$_GET['page'] : 1;
+        if ($page < 1) $page = 1;
+        $offset = ($page - 1) * $posts_per_page;
+
+        // Fetch posts and count likes simultaneously (retaining original query structure as mandated)
         $sql = "SELECT posts.*, users.username, 
                 (SELECT COUNT(*) FROM likes WHERE likes.post_id = posts.post_id) AS like_count 
                 FROM posts 
                 JOIN users ON posts.user_id = users.user_id 
-                ORDER BY upload_date DESC";
-        $result = $conn->query($sql);
+                ORDER BY upload_date DESC LIMIT ? OFFSET ?";
+        
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("ii", $posts_per_page, $offset);
+        $stmt->execute();
+        $result = $stmt->get_result();
 
         if ($result->num_rows > 0) {
             while($row = $result->fetch_assoc()): 
@@ -98,6 +108,17 @@ include 'includes/header.php';
             echo '<p style="text-align:center; padding: 20px;">No posts available yet. Be the first to upload!</p>';
         }
         ?>
+    </div>
+
+    <!-- Pagination Controls -->
+    <div style="text-align: center; margin: 20px 0;">
+        <?php if ($page > 1): ?>
+            <a href="?page=<?= $page - 1 ?>" style="padding: 10px 15px; background: #4a3b3b; color: white; text-decoration: none; border-radius: 5px; margin-right: 10px;">⬅ Previous</a>
+        <?php endif; ?>
+        
+        <?php if ($result->num_rows == $posts_per_page): ?>
+            <a href="?page=<?= $page + 1 ?>" style="padding: 10px 15px; background: #4a3b3b; color: white; text-decoration: none; border-radius: 5px;">Next ➡</a>
+        <?php endif; ?>
     </div>
 </div>
 
