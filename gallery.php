@@ -7,7 +7,16 @@ include 'includes/header.php';
 
 <div class="content">
     <h1>Calligraphy Feed</h1>
-    
+    <form method="GET" class="search-form">
+    <input
+        type="text"
+        name="search"
+        placeholder="Search by title, style, tags or AI analysis..."
+        value="<?= htmlspecialchars($_GET['search'] ?? '') ?>"
+    >
+
+    <button type="submit">Search</button>
+</form>
     <?php if (isset($_GET['msg']) && $_GET['msg'] == 'deleted'): ?>
         <p style="color: green; margin-bottom: 10px;">Post deleted successfully.</p>
     <?php endif; ?>
@@ -15,22 +24,76 @@ include 'includes/header.php';
     <div class="insta-grid">
         <?php
         // Pagination logic
-        $posts_per_page = 20;
+        $posts_per_page = APP_POSTS_PER_PAGE_GALLERY;
         $page = isset($_GET['page']) && is_numeric($_GET['page']) ? (int)$_GET['page'] : 1;
         if ($page < 1) $page = 1;
         $offset = ($page - 1) * $posts_per_page;
-
-        // Fetch posts and count likes simultaneously (retaining original query structure as mandated)
-        $sql = "SELECT posts.*, users.username, 
-                (SELECT COUNT(*) FROM likes WHERE likes.post_id = posts.post_id) AS like_count 
-                FROM posts 
-                JOIN users ON posts.user_id = users.user_id 
-                ORDER BY upload_date DESC LIMIT ? OFFSET ?";
         
-        $stmt = $conn->prepare($sql);
-        $stmt->bind_param("ii", $posts_per_page, $offset);
-        $stmt->execute();
-        $result = $stmt->get_result();
+        $search = trim($_GET['search'] ?? '');
+        // Fetch posts and count likes simultaneously (retaining original query structure as mandated)
+        if ($search !== "") {
+
+    $sql = "SELECT posts.*,
+            users.username,
+            (SELECT COUNT(*)
+             FROM likes
+             WHERE likes.post_id = posts.post_id) AS like_count
+            FROM posts
+            JOIN users ON posts.user_id = users.user_id
+
+            WHERE
+            (ai_moderation_status = 'Approved' OR ai_moderation_status IS NULL)
+            AND (
+                title LIKE ?
+                OR description LIKE ?
+                OR ai_title LIKE ?
+                OR ai_description LIKE ?
+                OR ai_style LIKE ?
+                OR ai_tags LIKE ?
+                OR ai_feedback LIKE ?
+            )
+
+            ORDER BY upload_date DESC
+            LIMIT ?
+            OFFSET ?";
+
+    $stmt = $conn->prepare($sql);
+
+    $keyword = "%{$search}%";
+
+    $stmt->bind_param(
+        "sssssssii",
+        $keyword,
+        $keyword,
+        $keyword,
+        $keyword,
+        $keyword,
+        $keyword,
+        $keyword,
+        $posts_per_page,
+        $offset
+    );
+
+} else {
+
+    $sql = "SELECT posts.*,
+            users.username,
+            (SELECT COUNT(*)
+             FROM likes
+             WHERE likes.post_id = posts.post_id) AS like_count
+            FROM posts
+            JOIN users ON posts.user_id = users.user_id
+            WHERE ai_moderation_status = 'Approved' OR ai_moderation_status IS NULL
+            ORDER BY upload_date DESC
+            LIMIT ?
+            OFFSET ?";
+
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("ii", $posts_per_page, $offset);
+}
+
+$stmt->execute();
+$result = $stmt->get_result();
 
         if ($result->num_rows > 0) {
             while($row = $result->fetch_assoc()): 
@@ -98,6 +161,28 @@ include 'includes/header.php';
                         <h3 class="post-title"><?= htmlspecialchars($row['title'], ENT_QUOTES, 'UTF-8'); ?></h3>
                     <?php endif; ?>
                     <div class="caption"><?= htmlspecialchars($row['description'], ENT_QUOTES, 'UTF-8'); ?></div>
+                    
+                    <?php if (!empty($row['ai_style']) || !empty($row['ai_score']) || !empty($row['ai_tags'])): ?>
+                    <div class="ai-gallery-badges" style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #eee; font-size: 0.9em; display: flex; flex-wrap: wrap; gap: 10px;">
+                        <?php if (!empty($row['ai_score'])): ?>
+                            <span style="background: #e8f5e9; color: #2e7d32; padding: 4px 8px; border-radius: 4px; font-weight: bold;">
+                                Score: <?= htmlspecialchars($row['ai_score'], ENT_QUOTES, 'UTF-8') ?>/100
+                            </span>
+                        <?php endif; ?>
+                        
+                        <?php if (!empty($row['ai_style'])): ?>
+                            <span style="background: #e3f2fd; color: #1565c0; padding: 4px 8px; border-radius: 4px;">
+                                ✍️ <?= htmlspecialchars($row['ai_style'], ENT_QUOTES, 'UTF-8') ?>
+                            </span>
+                        <?php endif; ?>
+                        
+                        <?php if (!empty($row['ai_tags'])): ?>
+                            <span style="color: #555; display: flex; align-items: center;">
+                                🏷️ <?= htmlspecialchars($row['ai_tags'], ENT_QUOTES, 'UTF-8') ?>
+                            </span>
+                        <?php endif; ?>
+                    </div>
+                    <?php endif; ?>
 
                 </div>
             </div>

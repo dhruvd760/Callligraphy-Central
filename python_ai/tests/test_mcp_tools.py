@@ -2,6 +2,7 @@ import pytest
 import sys
 import os
 from typing import Any
+from unittest.mock import patch, MagicMock
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
@@ -15,41 +16,55 @@ from mcp.mcp_tools import (
     LoadSessionTool
 )
 
-def test_analyze_calligraphy_tool():
+@patch('analyze_agent.AnalyzeAgent')
+def test_analyze_calligraphy_tool(mock_analyze_class):
+    mock_instance = mock_analyze_class.return_value
+    mock_instance.analyze.return_value = {"success": True, "description": "Dummy analysis."}
     tool = AnalyzeCalligraphyTool()
     assert tool.tool_name == "analyze_calligraphy"
     res = tool.execute(data="test")
-    assert res == {
-        "status": "success",
-        "tool": "analyze_calligraphy",
-        "result": "Dummy analysis."
-    }
+    assert res == {"success": True, "description": "Dummy analysis."}
 
-def test_generate_practice_sheet_tool():
+@patch('gemini_client.GeminiClient')
+def test_generate_practice_sheet_tool(mock_gemini_class):
+    mock_instance = mock_gemini_class.return_value
+    mock_instance.generate_response.return_value = "Dummy practice sheet generation."
     tool = GeneratePracticeSheetTool()
     assert tool.tool_name == "generate_practice_sheet"
     res = tool.execute(style="copperplate")
     assert res == "Dummy practice sheet generation."
 
-def test_evaluate_submission_tool():
+@patch('gemini_client.GeminiClient')
+def test_evaluate_submission_tool(mock_gemini_class):
+    mock_instance = mock_gemini_class.return_value
+    mock_instance.generate_response.return_value = "Dummy evaluation."
     tool = EvaluateSubmissionTool()
     assert tool.tool_name == "evaluate_submission"
     res = tool.execute(submission_id="123")
     assert res == "Dummy evaluation."
 
-def test_search_styles_tool():
+@patch('gemini_client.GeminiClient')
+def test_search_styles_tool(mock_gemini_class):
+    mock_instance = mock_gemini_class.return_value
+    mock_instance.generate_response.return_value = "Dummy search results."
     tool = SearchStylesTool()
     assert tool.tool_name == "search_styles"
     res = tool.execute(query="gothic")
     assert res == "Dummy search results."
 
-def test_save_session_tool():
+@patch('gemini_client.GeminiClient')
+def test_save_session_tool(mock_gemini_class):
+    mock_instance = mock_gemini_class.return_value
+    mock_instance.generate_response.return_value = "Dummy session saved."
     tool = SaveSessionTool()
     assert tool.tool_name == "save_session"
     res = tool.execute(session_data={})
     assert res == "Dummy session saved."
 
-def test_load_session_tool():
+@patch('gemini_client.GeminiClient')
+def test_load_session_tool(mock_gemini_class):
+    mock_instance = mock_gemini_class.return_value
+    mock_instance.generate_response.return_value = "Dummy session loaded."
     tool = LoadSessionTool()
     assert tool.tool_name == "load_session"
     res = tool.execute(session_id="abc")

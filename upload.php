@@ -15,6 +15,7 @@ if (!isset($_SESSION['user_id'])) {
 
 include 'includes/db_connect.php';
 include 'includes/csrf.php';
+require_once __DIR__ . '/includes/AIService.php';
 
 $msg = "";
 $title_val = "";
@@ -38,7 +39,7 @@ elseif (isset($_POST['upload'])) {
     $desc_val  = $_POST['description'];
 
     // Define 50MB limit in bytes
-    $max_size_bytes = 50 * 1024 * 1024; 
+    $max_size_bytes = APP_MAX_UPLOAD_SIZE_BYTES; 
 
     // PHP VALIDATION TIER
     if (strlen($desc_val) > 400) {
@@ -61,11 +62,19 @@ elseif (isset($_POST['upload'])) {
         $ext      = strtolower(pathinfo($target, PATHINFO_EXTENSION));
         
         $allowed_images = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
-        $allowed_videos = ['mp4', 'avi', 'mov', 'mkv'];
+        $allowed_videos = ['mp4', 'mov', 'avi', 'webm'];
 
         // Logic to define $type correctly to match Gallery Dashboard logic
         if (in_array($ext, $allowed_videos)) {
-            $type = 'video/' . $ext; // e.g., 'video/mp4'
+            if ($ext === 'mov') {
+                $type = 'video/quicktime';
+            } elseif ($ext === 'avi') {
+                $type = 'video/x-msvideo';
+            } elseif ($ext === 'webm') {
+                $type = 'video/webm';
+            } else {
+                $type = 'video/mp4';
+            }
         } elseif (in_array($ext, $allowed_images)) {
             $type = 'image/' . $ext; // e.g., 'image/png'
         } else {
@@ -86,8 +95,77 @@ elseif (isset($_POST['upload'])) {
                 $stmt->bind_param("issss", $user_id, $title_val, $fileName, $type, $desc_val);
                 
                 if ($stmt->execute()) {
-                    header("Location: gallery.php");
-                    exit();
+                    $post_id = $conn->insert_id;
+                    error_log("Upload success: Post $post_id created.");
+                    
+                    // Execute AI moderation decision and finalize publication workflow.
+                    $aiService = new AIService($conn);
+                    
+                    try {
+                        $evalData = $aiService->evaluatePost($title_val, $desc_val, realpath($target), $type, $fileName, $user_id, $post_id);
+                    } catch (Exception $e) {
+                        error_log("AI Evaluation Exception for post {$post_id}: " . $e->getMessage());
+                        $evalData = null;
+                    }
+
+                    if (!$evalData) {
+                        error_log("Upload succeeded, but AI evaluation failed for post {$post_id}. Cleaning up.");
+                        $evalData = [
+                            'approved' => false,
+                            'ai_available' => false,
+                            'relevance_score' => 0,
+                            'moderation_reason' => 'AI Evaluation unavailable due to API timeout or error.'
+                        ];
+                    } else {
+                        // Save unified evaluation data if it exists
+                        if (!$aiService->updatePost($post_id, $evalData)) {
+                            error_log("Failed to save AI analysis data for post {$post_id}.");
+                        }
+                        if (!$aiService->updateModeration($post_id, $evalData)) {
+                            error_log("Failed to save moderation data for post {$post_id}.");
+                        }
+                    }
+
+                    // Handle AI-First Publishing workflow
+                    $isSafe = (isset($evalData['approved']) && $evalData['approved'] === true);
+                    $aiAvailable = $evalData['ai_available'] ?? true;
+
+                    if (!$isSafe) {
+                        $fileDeleted = 'no';
+                        if (file_exists($target)) {
+                            unlink($target);
+                            $fileDeleted = 'yes';
+                        }
+                        $del_stmt = $conn->prepare("DELETE FROM posts WHERE post_id = ?");
+                        $del_stmt->bind_param("i", $post_id);
+                        $dbDeleted = $del_stmt->execute() ? 'yes' : 'no';
+                        $del_stmt->close();
+                        
+                        $conf = $evalData['relevance_score'] ?? 'N/A';
+                        $reason = $evalData['moderation_reason'] ?? 'None';
+                        
+                        $log_msg = "[AI MODERATION]\n" .
+                                   "Post: {$post_id}\n" .
+                                   "User: {$user_id}\n" .
+                                   "Original filename: " . ($_FILES['file']['name'] ?? 'unknown') . "\n" .
+                                   "Stored filename: {$fileName}\n" .
+                                   "AI confidence: {$conf}\n" .
+                                   "Approval boolean: false\n" .
+                                   "Reason: {$reason}\n" .
+                                   "File Deleted: {$fileDeleted}\n" .
+                                   "Database Deleted: {$dbDeleted}";
+                        error_log($log_msg);
+                        
+                        if (!$aiAvailable) {
+                            $msg = "AI moderation is temporarily unavailable. Your upload could not be processed at this time. Please try again in a few minutes.";
+                        } else {
+                            $msg = "Your upload could not be published because it did not satisfy the platform's AI moderation checks. Please upload an original calligraphy artwork that complies with the community guidelines.";
+                        }
+                    } else {
+                        header("Location: my_posts.php?upload_status=approved");
+                        exit();
+                    }
+                    // --- END AI EVALUATION ---
                 } else {
                     error_log("Database error in upload.php: " . $conn->error);
                     $msg = "Database Error: An error occurred while saving the post.";
@@ -106,6 +184,38 @@ elseif (isset($_POST['upload'])) {
 include 'includes/header.php';
 ?>
 
+<!-- Loading Overlay Styles -->
+<style>
+    #ai-loading-overlay {
+        display: none;
+        position: fixed;
+        top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(0,0,0,0.8);
+        z-index: 9999;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        color: white;
+        font-family: 'Inter', sans-serif;
+    }
+    .ai-spinner {
+        border: 6px solid #f3f3f3;
+        border-top: 6px solid #b71c1c;
+        border-radius: 50%;
+        width: 60px;
+        height: 60px;
+        animation: spin 1s linear infinite;
+        margin-bottom: 20px;
+    }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+</style>
+
+<div id="ai-loading-overlay">
+    <div class="ai-spinner"></div>
+    <h2 style="margin:0; font-weight: 300;">Analyzing Calligraphy...</h2>
+    <p style="color: #bbb; margin-top: 10px;">Our AI Master is reviewing your strokes.</p>
+</div>
+
 <div class="content">
     <div class="upload-wrapper">
         <h1 class="upload-header-title">Post to Gallery-Feed</h1>
@@ -117,7 +227,7 @@ include 'includes/header.php';
             </p>
         <?php endif; ?>
 
-        <form method="post" enctype="multipart/form-data" class="upload-form">
+        <form method="post" enctype="multipart/form-data" class="upload-form" onsubmit="document.getElementById('ai-loading-overlay').style.display = 'flex';">
             <input type="hidden" name="csrf_token" value="<?= generateCSRFToken() ?>">
             <div class="upload-field-container">
                 <label>Title</label>

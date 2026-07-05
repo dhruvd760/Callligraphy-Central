@@ -1,76 +1,193 @@
 # Calligraphy Central
 
-Welcome to **Calligraphy Central**, a web platform dedicated to preserving, sharing, and reviewing calligraphic art. This repository is being prepared for the **Google × Kaggle Agentic AI Capstone**, serving as the target environment for autonomous agents to inspect, secure, and potentially extend a legacy web application.
+**Calligraphy Central** is an AI-powered social media platform for the digital calligraphy community, developed as part of the **Google × Kaggle Agentic AI Capstone**. At its core, the project demonstrates how an autonomous AI agent can modernize a legacy PHP web application by intelligently moderating user-generated content, improving software quality, and enhancing the overall user experience.
+
+Rather than functioning as a traditional social media website, Calligraphy Central integrates an AI-powered moderation agent that autonomously evaluates uploaded artwork using **Google Gemini 2.5 Flash**. The agent performs content analysis, makes publication decisions, handles moderation failures safely, and assists in maintaining a secure and reliable platform while preserving the existing legacy architecture.
+
+The repository showcases the application of agentic software engineering principles, combining autonomous reasoning, structured execution playbooks, memory-aware workflows, validation pipelines, and security-focused refactoring within a real-world web application.
 
 ---
 
-## 🚀 Project Overview
+# 🎯 Project Objective
 
-Calligraphy Central is a classic multi-page PHP/MySQL web application. It features:
-*   **User Accounts**: Register, Login, Logout, and roles (user, admin).
-*   **Art Gallery / Feed**: An Instagram-like grid displaying uploaded images and videos of calligraphic work.
-*   **Social Interactions**: Logged-in users can "like" posts and submit comments on individual post pages.
-*   **Admin Tools**: Admin users can moderate content by deleting posts directly from the gallery feed.
-*   **Media Uploads**: Secure file upload handling for images and video files under 50MB.
+The objective of Calligraphy Central is to demonstrate how autonomous AI agents can be integrated into an existing social media platform to modernize legacy software through intelligent content moderation, automated decision-making, improved security, enhanced maintainability, and robust software engineering practices. The project serves as a practical example of applying agentic AI to solve real-world challenges in digital content management while preserving and promoting calligraphic art.
 
 ---
 
-## 🛠️ Technology Stack
+# 🚀 Project Overview
 
-*   **Frontend**: Plain HTML5, CSS3 (`style.css`), Vanilla JavaScript.
-*   **Backend**: PHP (Procedural, using database connections via MySQLi).
-*   **Database**: MySQL/MariaDB (`database.sql`).
-*   **Development Platform**: Designed to run seamlessly in local environments like XAMPP or standard Apache/PHP/MySQL stacks.
+Calligraphy Central is a multi-page PHP/MySQL web application designed for sharing and preserving calligraphic artwork.
+
+## Features
+
+- **User Authentication** – Register, Login, Logout, and Role-based Access (User/Admin).
+- **Art Gallery** – Instagram-style gallery displaying uploaded images and videos.
+- **Artwork Uploads** – Secure upload system supporting images and videos up to 50 MB.
+- **Social Interaction** – Like and comment on individual artworks.
+- **Admin Dashboard** – Moderate and remove inappropriate content.
+- **AI Moderation** – Google Gemini autonomously evaluates uploaded artwork. AI-approved submissions are published immediately, while content that fails moderation is rejected. If the AI service is unavailable, uploads fail safely with a user-friendly message.
+- **Responsive Design** – Optimized for desktop, tablet, and mobile devices.
 
 ---
 
-## 📂 Repository Directory Guide
+# 🛠 Technology Stack
+
+| Layer | Technology |
+|--------|------------|
+| Frontend | HTML5, CSS3, Vanilla JavaScript |
+| Backend | PHP (Procedural, MySQLi) |
+| Database | MySQL / MariaDB |
+| AI Integration | Google Gemini API (Gemini 2.5 Flash) |
+| Development Environment | XAMPP / Apache + PHP + MySQL |
+
+---
+
+# 🔒 Security Features
+
+The application implements several security improvements, including:
+
+- Prepared SQL statements throughout the application
+- CSRF protection for sensitive operations
+- Secure file upload validation
+- Role-based authentication and authorization
+- Centralized configuration management
+- AI-powered autonomous content moderation
+- Rate limiting for authentication and user actions
+
+---
+
+# 📂 Repository Directory Guide
 
 ```text
 ├── .agent/
 │   └── skills/          # Specialized markdown instructions for autonomous agents
-├── agents/              # Autonomous AI agent configurations and execution routines
-├── api/                 # Endpoint routers and handlers for future service access
-├── assets/              # Static media, icons, and branding materials
-├── competition/         # Capstone submission files and Kaggle configuration details
-├── docs/                # Supplementary design notes, developer guides, and analysis reports
-├── evaluation/          # Validation scripts, unit tests, and performance benchmarks
-├── includes/            # Reusable PHP templates (header, footer, database connect)
-├── memory/              # Sandbox storage for agent transaction histories and state logs
-├── python_ai/           # Python-based AI agentic integrations and model interaction layers
-├── uploads/             # Directory where user-uploaded media files are persisted
-├── database.sql         # Base database schema dump
-├── index.php            # Homepage / Calligraphy history and preservation details
-├── gallery.php          # Gallery feed dashboard
-├── upload.php           # Post/Artwork submission page
-└── [other PHP scripts]  # Authentication, likes, comments, and dashboard utilities
+├── agents/              # Autonomous AI agent configurations
+├── api/                 # API endpoint handlers
+├── assets/              # Images, icons, branding assets
+├── competition/         # Kaggle submission resources
+├── docs/                # Developer documentation
+├── evaluation/          # Automated validation scripts
+├── includes/            # Reusable PHP components
+├── memory/              # Agent memory and execution logs
+├── python_ai/           # Python AI orchestration modules
+├── uploads/             # User uploaded media
+├── database.sql         # Database schema
+├── index.php            # Landing page
+├── gallery.php          # Gallery page
+├── upload.php           # Upload page
+└── other PHP files      # Authentication, comments, likes, dashboard, etc.
 ```
 
 ---
 
-## ⚙️ Local Development Setup
+# ⚙ Local Development Setup
 
-To run Calligraphy Central locally:
+## 1. Install XAMPP
+Install XAMPP (or any Apache + PHP + MySQL environment).
 
-1.  **Install XAMPP** (or any Apache + MySQL environment).
-2.  **Clone / Copy** this repository into your web root directory:
-    *   For XAMPP: `C:\xampp\htdocs\calligraphy_project\`
-3.  **Start Apache and MySQL** via the XAMPP Control Panel.
-4.  **Create the Database**:
-    *   Open `http://localhost/phpmyadmin`.
-    *   Create a new database named `calligraphy_db`.
-    *   Import `database.sql` to populate the tables.
-5.  **Configure Database Connection**:
-    *   Verify credentials in `includes/db_connect.php`.
-    *   Default settings target `localhost`, username `root`, empty password `""`, and database `calligraphy_db`.
-6.  **Access the Application**:
-    *   Navigate to `http://localhost/calligraphy_project/` in your web browser.
+## 2. Copy the Project
+Copy the project into your web root.
+
+Example:
+
+```text
+C:\xampp\htdocs\calligraphy_project\
+```
+
+## 3. Start Services
+
+Start Apache and MySQL from the XAMPP Control Panel.
+
+## 4. Create the Database
+
+Open:
+
+```text
+http://localhost/phpmyadmin
+```
+
+Create a database named `calligraphy_db` and import `database.sql`.
+
+## 5. Configure Database Connection
+
+Verify the credentials in `includes/config.php`.
+
+Default configuration:
+
+- Host: localhost
+- Username: root
+- Password: (empty)
+- Database: calligraphy_db
+
+## 6. Configure AI Environment
+
+Copy:
+
+`python_ai/.env.example`
+
+to:
+
+`python_ai/.env`
+
+Then add:
+
+```env
+GEMINI_API_KEY=your_api_key_here
+```
+
+## 7. Launch the Application
+
+Open:
+
+```text
+http://localhost/calligraphy_project/
+```
 
 ---
 
-## 🤖 Google × Kaggle Agentic AI Capstone
+# 🤖 Google × Kaggle Agentic AI Capstone
 
-This repository is optimized for autonomous software engineering agents.
-*   **Rules of Engagement**: All modifications must obey the guidelines outlined in the [PROJECT_CONSTITUTION.md](file:///c:/xampp/htdocs/calligraphy_project/PROJECT_CONSTITUTION.md).
-*   **Agent Skills**: The folder `.agent/skills/` contains explicit execution instructions for agent sub-systems, providing target-specific context for task planning.
-*   **Testing & Evaluation**: See the `/evaluation/` folder for running validation test cases.
+This repository serves as the primary environment for autonomous software engineering agents to analyze, secure, refactor, and improve a legacy PHP application.
+
+## System Architecture
+
+### Architecture Components
+
+**LLM Engine**
+
+Uses Google's **Gemini 2.5 Flash** model via the Google AI Studio API for rapid reasoning, multi-file code auditing, and autonomous artwork moderation.
+
+**Execution Playbooks**
+
+Agent runtime actions are constrained by contextual playbooks located in `.agent/skills/`.
+
+**Memory Management**
+
+Execution logs, historical agent modifications, and multi-turn state contexts are maintained inside the `memory/` directory.
+
+**Validation Subsystem**
+
+Automated validation scripts inside `evaluation/` verify application routes and help ensure that agent-applied modifications do not introduce regressions or backend failures.
+
+---
+
+# 📋 Capstone Information
+
+This project was developed as part of the **Google × Kaggle Agentic AI Capstone**.
+
+Autonomous agents were used to:
+
+- Audit legacy PHP code
+- Improve application security
+- Refactor database access
+- Centralize configuration
+- Implement AI-powered autonomous moderation
+- Improve reliability through structured error handling and audit logging
+- Enhance maintainability
+- Document the software architecture in accordance with the project's engineering guidelines and Project Constitution
+
+---
+
+# 📄 License
+
+This project is intended for educational purposes as part of the Google × Kaggle Agentic AI Capstone.

@@ -19,6 +19,15 @@ include_once 'includes/session_config.php';
     <div class="bkgimg"></div>   
     <div class="head">Calligraphy Central</div>
     <input type="checkbox" id="check">
+    <label for="check" class="sidebar-overlay"></label>
+    <script>
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                const cb = document.getElementById('check');
+                if(cb && cb.checked) cb.checked = false;
+            }
+        });
+    </script>
     
     
      <div class="hamburger">   
@@ -46,6 +55,7 @@ include_once 'includes/session_config.php';
 
                     <li class="mob"><a href="upload.php">Upload Art</a></li>
                     <li><a href="my_posts.php">My Posts</a></li>
+                    <li><a href="progress.php" style="color: #4a3b3b; font-weight: bold;">AI Progress</a></li>
                     <li class="mob"><a href="logout.php">Logout</a></li>
                 <?php else: ?>
                     <li class="mob"><a href="login.php">Login</a></li>

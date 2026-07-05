@@ -5,9 +5,6 @@ import os
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-# Mock gemini_client module before importing MetadataAgent to prevent google.generativeai import error
-sys.modules['gemini_client'] = MagicMock()
-
 from metadata_agent import MetadataAgent
 from response_models import TagResult, KeywordResult, StyleResult, LanguageResult, DescriptionResult, TitleResult
 

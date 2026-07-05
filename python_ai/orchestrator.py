@@ -120,7 +120,12 @@ class Orchestrator:
             if filters is None:
                 filters = {}
 
-            if task_type == "search":
+            if task_type == "analyze":
+                from analyze_agent import AnalyzeAgent
+                agent = AnalyzeAgent()
+                return agent.analyze(prompt=filters.get("prompt", "") or filters.get("description", ""))
+                
+            elif task_type == "search":
                 return self.search_posts(filters.get("query", ""))
                 
             elif task_type == "recommendations":

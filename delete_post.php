@@ -57,9 +57,11 @@ if ($post['user_id'] == $current_user_id || $user_role === 'admin') {
         
         if ($user_role === 'admin') {
             header("Location: admin_dashboard.php?msg=deleted");
+            exit();
         } else {
             // Regular users go to Gallery
             header("Location: my_posts.php?msg=deleted");
+            exit();
         }
         exit();
         

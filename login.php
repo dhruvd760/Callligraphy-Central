@@ -17,8 +17,8 @@ if(isset($_POST['login_btn'])) {
     $email = $_POST['email'];
     $password = $_POST['password'];
 
-    include_once 'includes/login_rate_limit.php';
-    $rate_limit_check = checkLoginRateLimit($conn, $email);
+    include_once 'includes/RateLimiter.php';
+    $rate_limit_check = RateLimiter::checkLoginRateLimit($conn, $email);
 
     if ($rate_limit_check['locked']) {
         $minutes = ceil($rate_limit_check['remaining'] / 60);
@@ -39,7 +39,7 @@ if(isset($_POST['login_btn'])) {
              $msg = "Email  found";
             if (password_verify($password, $row['password'])) {
                 // Clear attempts on success
-                clearLoginAttempts($conn, $email);
+                RateLimiter::clearLoginAttempts($conn, $email);
                 
                 //session login/logout glitching fix (Prevents "Glitching/Logout")
                 session_regenerate_id(true);       // Security: Get a fresh Session ID
@@ -50,11 +50,11 @@ if(isset($_POST['login_btn'])) {
                 header("Location: index.php");
                 exit();
             } else {
-                recordFailedLoginAttempt($conn, $email);
+                RateLimiter::recordFailedLoginAttempt($conn, $email);
                 $msg = "Incorrect Password";
             }
         } else {
-            recordFailedLoginAttempt($conn, $email);
+            RateLimiter::recordFailedLoginAttempt($conn, $email);
             $msg = "Email not found";
         }
         //part of original logic

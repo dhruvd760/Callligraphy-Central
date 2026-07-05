@@ -1,111 +1,96 @@
 """
-Low-level client wrapper for interacting with the Google Gemini API.
-
-This module provides the GeminiClient class, which serves as a reusable, production-ready,
-and resilient gateway to Gemini's generative capabilities. It contains no business logic
-and is designed to be imported and utilized by specialized agent classes.
-
-Future support plans:
-- Conversation Memory: Add stateful chat sessions (using `model.start_chat()`) to enable
-  multi-turn dialogues with historical context.
-- Semantic Routing: Integrate embedding models (`models/embedding-001`) to support
-  semantic text classification and request routing.
-- Image Understanding: Add support for visual input processing, allowing calligraphy
-  images to be parsed, analyzed, and critiqued.
-- Tool Calling / Function Calling: Declare Python functions as tools so Gemini can decide
-  when to call external databases, search indexes, or calculators.
-- Multimodal Inputs: Support mixed inputs of text, image, audio, and PDF formats to offer
-  a richer and more immersive interactive experience.
+Low-level client wrapper for interacting with the Google Gemini API (Modern SDK).
+Handles Text, JSON enforcement, and Multimodal Image processing.
 """
-
-import google.generativeai as genai
+import json
 import logging
 import os
+from google import genai
+from google.genai import types
+from PIL import Image
 
-# Set up local logger
 logger = logging.getLogger(__name__)
 
 class GeminiClient:
     """
-    A low-level wrapper for the Gemini API.
-    
-    Provides configuration, initialization of the Generative Model, and general-purpose
-    response generation capabilities. This client serves as the primary gateway for all
-    AI agent operations, ensuring uniform configuration, error tracking, and fallback behaviors.
+    A resilient gateway for the Gemini API using the official `google-genai` SDK.
     """
 
     def __init__(self):
-        """
-        Initialize the Gemini Client.
-        
-        Reads the GEMINI_API_KEY environment variable, configures the generative AI
-        library, and initializes the target model (gemini-2.5-pro).
-        
-        Future Support:
-        - Incorporate dynamic generation configurations (temperature, top_p, top_k, max_output_tokens).
-        - Allow custom model overrides during initialization.
-        - Handle custom API endpoints/proxies if required.
-        """
         logger.info("Initializing GeminiClient...")
         
-        # Read API key from environment
         self.api_key = os.getenv("GEMINI_API_KEY")
         if not self.api_key:
-            logger.warning(
-                "GEMINI_API_KEY environment variable is not set. "
-                "Gemini API calls will fail unless configured via alternate methods."
-            )
+            logger.warning("GEMINI_API_KEY environment variable is missing!")
         
         try:
-            # Configure Gemini API access
-            genai.configure(api_key=self.api_key)
-            logger.info("Gemini API successfully configured.")
+            # 1. Modern SDK Client Initialization
+            self.client = genai.Client(api_key=self.api_key)
             
-            # Initialize the primary generation model
-            # gemini-2.5-pro is standard for complex, structured, and logical tasks
-            self.model = genai.GenerativeModel("gemini-2.5-pro")
-            logger.info("GenerativeModel 'gemini-2.5-pro' initialized.")
+            # Using the official standard model for complex multimodal & reasoning tasks
+            self.model_name = "gemini-2.5-flash"
+            logger.info(f"GeminiClient successfully initialized targeting '{self.model_name}'")
             
         except Exception as e:
-            logger.error(f"Failed to initialize GeminiClient: {e}", exc_info=True)
+            logger.error(f"Failed to initialize Gemini SDK Client: {e}", exc_info=True)
             raise e
+
+    def analyze_multimodal(self, prompt: str, image_path: str = None, system_instruction: str = None) -> str:
+        """
+        Sends Text AND an optional Image to Gemini, strictly demanding a JSON response.
+        """
+        if not prompt:
+            return '{"error": "Empty prompt provided"}'
+
+        contents_payload = [prompt]
+
+        # 2. Automatically resolve and load the image if PHP sent a path
+        if image_path:
+            if os.path.exists(image_path):
+                try:
+                    logger.info(f"Loading visual asset from: {image_path}")
+                    img = Image.open(image_path)
+                    contents_payload.append(img)
+                except Exception as e:
+                    logger.error(f"Failed to parse image file at {image_path}: {e}")
+                    return f'{{"error": "Corrupted or unreadable image file: {e}"}}'
+            else:
+                logger.error(f"Image path not found on server drive: {image_path}")
+                return f'{{"error": "Image file does not exist at path: {image_path}"}}'
+
+        try:
+            logger.info(f"Dispatching payload to {self.model_name}...")
+            
+            # 3. Configure strict JSON output so your PHP json_decode() never fails
+            config = types.GenerateContentConfig(
+                max_output_tokens=2048,
+                temperature=0.0, # Low temperature = more consistent, factual JSON
+                response_mime_type="application/json",
+                system_instruction=system_instruction
+            )
+
+            response = self.client.models.generate_content(
+                model=self.model_name,
+                contents=contents_payload,
+                config=config
+            )
+
+            return response.text
+
+        except Exception as e:
+            logger.error(f"Gemini API Execution Error: {e}", exc_info=True)
+            return f'{{"error": "AI generation failed: {str(e)}"}}'
 
     def generate_response(self, prompt: str) -> str:
         """
-        Send a prompt to the initialized Gemini model and retrieve the text response.
-
-        Args:
-            prompt (str): The prompt instruction to send to Gemini.
-
-        Returns:
-            str: The text response generated by Gemini, or a fallback message if an error occurs.
-            
-        Future Support:
-        - Conversation Memory: Utilize a chat session instead of one-shot generation for chat intents.
-        - Semantic Routing: Process the prompt using a router classifier before sending it to the model.
-        - Image Understanding: Accept visual assets alongside the prompt string and construct multimodal contents.
-        - Tool Calling: Register tools and execute callback functions when Gemini initiates tool calls.
-        - Multimodal Inputs: Pre-process non-text files and format them as part of the content payload.
+        Standard legacy text-only fallback method.
         """
-        if not prompt:
-            logger.warning("Empty prompt received in generate_response.")
-            return "Unable to generate a response due to an empty prompt."
-
-        logger.info(f"Sending prompt to Gemini (length: {len(prompt)} characters)...")
-        
         try:
-            # Send the prompt to the configured model
-            response = self.model.generate_content(prompt)
-            
-            # Verify response validity and retrieve generated text
-            if response and response.text:
-                logger.info("Successfully received response from Gemini.")
-                return response.text
-            else:
-                logger.warning("Received empty or invalid response object from Gemini.")
-                return "Unable to generate a response."
-                
+            response = self.client.models.generate_content(
+                model=self.model_name,
+                contents=prompt
+            )
+            return response.text
         except Exception as e:
-            # Log failure with traceback for diagnostics
-            logger.error(f"Error occurred during Gemini response generation: {e}", exc_info=True)
-            return "Unable to generate a response."
+            logger.error(f"Standard generation failed: {e}")
+            return "Unable to generate response."

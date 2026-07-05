@@ -7,14 +7,14 @@ $msg = "";
 if(isset($_POST['reg_btn'])) {
     verifyCSRFToken();
 
-    include_once 'includes/register_rate_limit.php';
-    $rate_limit_check = checkRegisterRateLimit($conn);
+    include_once 'includes/RateLimiter.php';
+    $rate_limit_check = RateLimiter::checkRegisterRateLimit($conn);
 
     if ($rate_limit_check['locked']) {
         $minutes = ceil($rate_limit_check['remaining'] / 60);
         $msg = "Too many registration attempts. Please try again in $minutes minute(s).";
     } else {
-        recordRegistrationAttempt($conn);
+        RateLimiter::recordRegistrationAttempt($conn);
         $username = $_POST['username'];
         $email = $_POST['email'];
         

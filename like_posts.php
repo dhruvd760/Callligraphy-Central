@@ -15,20 +15,21 @@ if (isset($_POST['post_id'])) {
     $user_id = $_SESSION['user_id'];
     $post_id = $_POST['post_id'];
 
-    include_once 'includes/like_rate_limit.php';
-    $rate_limit_check = checkLikeRateLimit($conn, $user_id);
+    include_once 'includes/RateLimiter.php';
+    $rate_limit_check = RateLimiter::checkLikeRateLimit($conn, $user_id);
 
     if ($rate_limit_check['locked']) {
         if (isset($_SERVER['HTTP_REFERER'])) {
             header("Location: " . $_SERVER['HTTP_REFERER']);
         } else {
             header("Location: gallery.php");
+            exit();
         }
         exit();
     }
 
     // Record the attempt
-    recordLikeAttempt($conn, $user_id);
+    RateLimiter::recordLikeAttempt($conn, $user_id);
 
     // 1. Check if already liked
     $check = $conn->prepare("SELECT like_id FROM likes WHERE user_id = ? AND post_id = ?");
@@ -54,6 +55,7 @@ if (isset($_POST['post_id'])) {
     } else {
         // Fallback just in case
         header("Location: gallery.php");
+        exit();
     }
     exit();
 }

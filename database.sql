@@ -20,6 +20,11 @@ CREATE TABLE IF NOT EXISTS posts (
     description VARCHAR(400),
     file_name VARCHAR(255) NOT NULL,
     file_type VARCHAR(50) NOT NULL,
+    ai_score INT DEFAULT NULL,
+    ai_style VARCHAR(50) DEFAULT NULL,
+    ai_tags TEXT DEFAULT NULL,
+    ai_feedback TEXT DEFAULT NULL,
+    ai_moderation_status VARCHAR(20) DEFAULT 'Approved',
     upload_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
 );
@@ -51,3 +56,4 @@ CREATE INDEX IF NOT EXISTS idx_posts_upload_date ON posts(upload_date DESC);
 CREATE INDEX IF NOT EXISTS idx_comments_created_at ON comments(created_at ASC);
 CREATE INDEX IF NOT EXISTS idx_comments_post_id ON comments(post_id);
 CREATE INDEX IF NOT EXISTS idx_likes_post_id ON likes(post_id);
+CREATE INDEX IF NOT EXISTS idx_ai_mod_status ON posts(ai_moderation_status);

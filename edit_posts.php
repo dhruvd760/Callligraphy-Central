@@ -125,7 +125,7 @@ if (isset($_POST['update_post'])) {
     // Execute the query if it was prepared successfully
     if (isset($up_stmt) && $up_stmt && $up_stmt->execute()) {
         // REPLACED JS REDIRECT: Native PHP Redirect
-        header("Location: gallery.php"); 
+        header("Location: gallery.php");
         exit(); // Always exit immediately after a header redirect
     } else if (empty($error_message)) {
         // If it failed and we haven't already set an upload error message

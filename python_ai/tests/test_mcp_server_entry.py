@@ -3,11 +3,16 @@ import json
 import io
 import os
 import pytest
+from unittest.mock import patch
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from mcp_server_entry import main
 
-def test_mcp_server_entry_valid_request(monkeypatch):
+@patch('gemini_client.GeminiClient')
+def test_mcp_server_entry_valid_request(mock_gemini_class, monkeypatch):
+    mock_instance = mock_gemini_class.return_value
+    mock_instance.generate_response.return_value = "Dummy practice sheet generation."
+    
     # Mock sys.stdin to simulate an incoming JSON-RPC-like single line payload
     mock_input = json.dumps({"tool": "generate_practice_sheet", "arguments": {}}) + "\n"
     monkeypatch.setattr("sys.stdin", io.StringIO(mock_input))

@@ -18,8 +18,8 @@ if (isset($_POST['post_id']) && isset($_POST['comment_text'])) {
     $post_id = $_POST['post_id'];
     $comment = $_POST['comment_text']; // Sanitize input!
 
-    include_once 'includes/comment_rate_limit.php';
-    $rate_limit_check = checkCommentRateLimit($conn, $user_id);
+    include_once 'includes/RateLimiter.php';
+    $rate_limit_check = RateLimiter::checkCommentRateLimit($conn, $user_id);
 
     if ($rate_limit_check['locked']) {
         header("Location: view_post.php?id=" . $post_id . "&error=rate_limit");
@@ -27,7 +27,7 @@ if (isset($_POST['post_id']) && isset($_POST['comment_text'])) {
     }
 
     // Record the comment attempt
-    recordCommentAttempt($conn, $user_id);
+    RateLimiter::recordCommentAttempt($conn, $user_id);
 
     // Ensure the comment isn't just empty spaces
     if (!empty(trim($comment))) {
