@@ -145,6 +145,24 @@ http://localhost/calligraphy_project/
 
 ---
 
+## 8. Use the following demo profiles of artists:
+
+Prime Admin
+admin@gmail.com
+Admin890#
+
+Prime User
+user@gmail.com 
+User890#
+
+CoreCalligrapher
+corecalli@gmail.com
+Core2480
+
+ArtiYash
+yash@yahoo.com
+Yash8900
+
 # 🤖 Google × Kaggle Agentic AI Capstone
 
 This repository serves as the primary environment for autonomous software engineering agents to analyze, secure, refactor, and improve a legacy PHP application.
