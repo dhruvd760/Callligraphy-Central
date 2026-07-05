@@ -148,20 +148,24 @@ http://localhost/calligraphy_project/
 ## 8. Use the following demo profiles of artists:
 
 Prime Admin
-admin@gmail.com
-Admin890#
+
+email: admin@gmail.com
+password: Admin890#
 
 Prime User
-user@gmail.com 
-User890#
+
+email: user@gmail.com 
+password: User890#
 
 CoreCalligrapher
-corecalli@gmail.com
-Core2480
+
+email: corecalli@gmail.com
+password: Core2480
 
 ArtiYash
-yash@yahoo.com
-Yash8900
+
+email: yash@yahoo.com
+password: Yash8900
 
 # 🤖 Google × Kaggle Agentic AI Capstone
 
